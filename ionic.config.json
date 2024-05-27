@@ -1,0 +1,8 @@
+{
+  "name": "otzovik-fr",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite",
+  "id": "22dd072d"
+}
