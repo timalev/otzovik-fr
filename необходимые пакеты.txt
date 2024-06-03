@@ -1,0 +1,19 @@
+необходимые модули:
+
+npm install axios
+npm install firebase
+
+* если не будут подгружаться данные, необходимо перезагрузить бэк (теряется коннект с mssql)
+
+Схема:
+
+1. Home.tsx - здесь отображаюся все отзывы (шаблон списка берется из файла components\MessageListItem.tsx)
+2. ViewMessage.tsx - 
+
+открывается по адресу review, данный роутинг прописан в файле App.tsx:
+'<Route path="/review/:id">
+           <ViewMessage />
+        </Route>
+'
+
+отображает все отзывы товара после клика по товару из Home.tsx (шаблон списка отзывов берет из components\OtziviListItem.tsx)

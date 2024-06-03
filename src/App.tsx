@@ -2,7 +2,12 @@ import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
+import Authorization from './pages/Authorization';
+import Registration from './pages/Registration';
+import Addgood from './pages/Addgood';
+
 import ViewMessage from './pages/ViewMessage';
+import ViewBrand from './pages/ViewBrand';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -46,7 +51,21 @@ const App: React.FC = () => (
         <Route path="/home" exact={true}>
           <Home />
         </Route>
-        <Route path="/message/:id">
+		<Route path="/Authorization" exact={true}>
+          <Authorization />
+        </Route>
+		<Route path="/Registration" exact={true}>
+          <Registration />
+        </Route>
+        <Route path="/Addgood" exact={true}>
+          <Addgood />
+        </Route>
+
+		<Route path="/brands/">
+           <ViewBrand />
+        </Route>
+
+        <Route path="/review/:id">
            <ViewMessage />
         </Route>
       </IonRouterOutlet>

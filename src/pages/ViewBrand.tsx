@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react';
+import { initializeApp } from 'firebase/app';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCKhhnOXdBkD2udkP1hZiGrdjlCuSll5OA",
+  authDomain: "nearmeeting-afc99.firebaseapp.com",
+  databaseURL: "https://nearmeeting-afc99-default-rtdb.firebaseio.com",
+  projectId: "nearmeeting-afc99",
+  storageBucket: "nearmeeting-afc99.appspot.com",
+  messagingSenderId: "819922553345",
+  appId: "1:819922553345:web:42cb6c77c8281ede78ce00"
+};
+
+initializeApp(firebaseConfig);
+
 import { getAuth,createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import OtziviListItem from '../components/OtziviListItem';
+import BrandListItem from '../components/BrandListItem';
 import axios from "axios";
 import React from "react";
 
@@ -22,16 +36,16 @@ import {
 } from '@ionic/react';
 import { personCircle } from 'ionicons/icons';
 import { useParams } from 'react-router';
-import './ViewMessage.css';
+import './ViewBrand.css';
 
 
 
 
-function ViewMessage() {
+function ViewBrand() {
 
   const [user, setUser] = useState(null);
   const [post, setPost] = useState([]);
-  const [otzi, setOtzi] = useState([]);
+  const [bran, setBrd] = useState([]);
   const [muzTit, setMuzTit] = useState('');
   const [muzDesc, setMuzDesc] = useState('');
   const [muzPho, setMuzPho] = useState('');
@@ -40,10 +54,6 @@ function ViewMessage() {
   const [visTit, setVisTit] = useState('');
   const [visDesc, setVisDesc] = useState('');
   const [visPho, setVisPho] = useState('');
-  const [img, setImg] = useState('src/data/noph.png');
-  const [otstr, setOtstr] = useState('block');
-  const [otfrm, setOtfrm] = useState('hidden');
-  
 
 
   const params = useParams<{ id: string }>();
@@ -57,37 +67,18 @@ const auth = getAuth();
 	 onAuthStateChanged(auth, (user) => {
    if (user) {
 	   setUser(user.email);
-	   setOtstr('hidden');
-	   setOtfrm('block');
-      } 
+      } else window.location.href="/authorization";
   });
 
-// получаем информацию о товаре
-	 axios.get("http://localhost:3000/getmuzeirec?id=" + params.id).then((response) => {
-		 
-		 setMuzTit(response.data[0].names);
-	     setMuzDesc(response.data[0].descr);
-	     //setMuzPho(response.data[0].photos);
-		 if (response.data[0].photos!="")
-		 {
-			 setImg('http://localhost:3000/src/uploads/' + response.data[0].photos);
-		 }
 
-    });
+// получаем бренды
 
-
-// получаем отзывы о данном товаре
-
-   fetch("http://localhost:3000/getotzivi?tovar="+params.id)
+   fetch("http://localhost:3000/getbrands")
       .then((response) => response.json())
-      .then((data) => setOtzi(data));
+      .then((data) => setBrd(data));
 }, []);
 
-
-
-  
-
-
+//console.log(bran);
 
      const url = new URL(window.location.href);
 
@@ -103,24 +94,44 @@ const auth = getAuth();
 
 	 }
 
+	if (url.searchParams.has('db')) {
 
-const AddRev: React.FC = (event) => {
+	
+	const urlParams = new URLSearchParams(window.location.search);
+    const db = urlParams.get('db');
+
+	useEffect(() => {
+		
+		
+
+	axios.get("http://localhost:3000/delbrd?db=" + db).then(response => { 
+		setStr('Бренд удален!');
+			
+	})
+		.catch(error => {console.log ("Error sending POST request", error)});
+	}, []);
+
+   }
+
+
+const AddBrd: React.FC = (event) => {
 
  event.preventDefault();
 
 
-if (event.target.otz.value!="")
+if (event.target.brd.value!="")
 	{
     
 
-	axios.post("http://localhost:3000/addotz", {
-            "otziv": event.target.otz.value,
-			"user": user,
-			"tovar": params.id
+	axios.post("http://localhost:3000/addbrd", {
+            "brand": event.target.brd.value,
+			"user": user
+
         })
 		.then(response => { 
 				console.log ("POST request successful", response.data); 
-				setStr("Отзыв успешно добавлен!");
+
+				setStr("Бренд успешно добавлен!");
 				//this.setState({shouldRedirect: true});
 				
 				
@@ -142,16 +153,12 @@ if (event.target.otz.value!="")
       <IonHeader translucent>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton text="Назад" defaultHref="/home"></IonBackButton>
+            <IonBackButton text="Назад" defaultHref="/AddGood"></IonBackButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
 
       <IonContent fullscreen>
-
-
-
-
 {(
 			
 
@@ -160,39 +167,25 @@ if (event.target.otz.value!="")
               
               <IonLabel className="ion-text-wrap">
 
-				<br/>
-         
-              
 
-        <div className="ion-padding" align="center">
-             
-<table border="0">
-			
-			<tbody>
-  <tr>
-	<td style={{borderSpacing: '35px 35px'}}><img src={`${img}`} width="200px"  />  </td>
-		<td>&nbsp;&nbsp;</td>
-	<td  valign="top" > <h1>{muzTit}</h1>{muzDesc}</td>
-  </tr>
-		</tbody>
-  </table>
-  <br />
-			<font color="green">{str}</font><br/>
+        <div className="ion-padding" align="left">
+              <h1>Бренды</h1>
 
-			Оставить отзыв:
-				<div className={otstr}>Оставлять отзывы могут только зарегестрированные пользователи</div>
+	
 
- <form  onSubmit={AddRev}  className={otfrm}>
+ <form  onSubmit={AddBrd}  >
+	   
+        
+<input type="text" name="brd" />
 
- <textarea cols="40" rows="5" name="otz"></textarea>
-                <br />
+
 	            
 	     <input type="submit" value="Добавить" />
                 </form>
 
-
+	<font color="green">{str}</font><br/>
 <IonList>
-          {otzi.map(m => <OtziviListItem key={m.id} otziv={m} />)}
+          {bran.map(m => <BrandListItem key={m.id} brand={m} />)}
         </IonList>
 
 				
@@ -232,4 +225,4 @@ if (event.target.otz.value!="")
 
 
 
-export default ViewMessage;
+export default ViewBrand;
